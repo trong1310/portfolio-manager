@@ -1,7 +1,8 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { BaseEntity } from 'src/common';
 import { v4 as uuidv4 } from 'uuid';
+import { AccountRatetingProjectEntity } from 'src/modules/projects/entities/account-rating-project.entity';
 @Entity({ name: 'accounts' })
 export class Account extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -32,4 +33,6 @@ export class Account extends BaseEntity {
   generateUuid() {
     this.uuid = uuidv4();
   }
+    @OneToMany(() => AccountRatetingProjectEntity, (arp) => arp.account_uuid)
+    accountRatetingProjects: AccountRatetingProjectEntity[];
 }

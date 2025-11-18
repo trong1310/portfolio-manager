@@ -14,7 +14,6 @@ import { LoggerMiddleware } from './core/middleware/logger.middleware';
 
 import { RefeshTokenModule } from './modules/refesh-token/refesh-token.module';
 import { DeviceInfoMiddleware } from './core/middleware/device-info.middleware';
-import { minutes, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { env } from './env';
 import { SharedModule } from './core/shared/shared.module';
@@ -22,6 +21,7 @@ import { ContextGuard } from './core/guards/context.guard';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 import { HandlerResultInterceptor } from './common/handler-result.interceptor';
 import { UploadModule } from './modules/upload/upload.module';
+import { ProjectModule } from './modules/projects/project.module';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -48,6 +48,7 @@ import { UploadModule } from './modules/upload/upload.module';
     AuthModule,
     RefeshTokenModule,
     UploadModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [
