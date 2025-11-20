@@ -24,7 +24,7 @@ export class AccountsService {
       !account
     ) {
       return false;
-    }
+    }ea
 
     return {
       id: account.id,
