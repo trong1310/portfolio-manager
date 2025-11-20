@@ -13,7 +13,7 @@ export class AccountsService {
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
   ) {}
-
+test commit cicd
   async validateAccount(username: string, password: string) {
     const account = await this.accountRepository.findOne({
       where: { username },
