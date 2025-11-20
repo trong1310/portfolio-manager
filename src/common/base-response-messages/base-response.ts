@@ -1,115 +1,54 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { ErrorCode } from "../error-code.enum";
+import { ApiProperty } from '@nestjs/swagger';
+import { ErrorCode } from '../error-code.enum';
 
+/* ----------------------- PAGINATION --------------------------- */
 export class PaginationDto {
-  @ApiProperty({ example: 0, description: 'Tổng số item' })
-  TotalCount: number = 0;
+  @ApiProperty({ example: 0 })
+  TotalCount: number;
 
-  @ApiProperty({ example: 0, description: 'Tổng số trang' })
-  TotalPage: number = 0;
+  @ApiProperty({ example: 0 })
+  TotalPage: number;
 }
 
-export class BaseResponseMessage {
-  @ApiProperty({
-    description: 'Thông tin lỗi',
-    type: Object
-  })
-  error: {
-    Code: ErrorCode;
-    Message: string;
-  };
+/* ----------------------- BASE ERROR --------------------------- */
+export class ErrorResponseDto {
+  @ApiProperty({ enum: ErrorCode, example: ErrorCode.SUCCESS })
+  Code: ErrorCode;
 
-  constructor(code: ErrorCode = ErrorCode.SUCCESS) {
+  @ApiProperty({ example: 'SUCCESS' })
+  Message: string;
+}
+
+/* ----------------------- BASE PAGE RESPONSE ------------------- */
+export class PageDataResponseDto<T> {
+  @ApiProperty({ isArray: true })
+  Items: T[];
+
+  @ApiProperty({ type: PaginationDto })
+  Pagination: PaginationDto;
+}
+
+/* ----------------------- BASE RESPONSE ------------------------ */
+export class BaseResponseMessagePage<T> {
+  @ApiProperty({ type: ErrorResponseDto })
+  error: ErrorResponseDto;
+
+  @ApiProperty({ type: () => PageDataResponseDto })
+  Data: PageDataResponseDto<T>;
+
+  constructor() {
     this.error = {
-      Code: code,
-      Message: toDescriptionString(code),
+      Code: ErrorCode.SUCCESS,
+      Message: 'SUCCESS',
+    };
+
+    this.Data = {
+      Items: [],
+      Pagination: {
+        TotalCount: 0,
+        TotalPage: 0,
+      },
     };
   }
 }
 
-export class BaseResponseMessageGeneric<T> extends BaseResponseMessage {
-  @ApiProperty({
-    description: 'Dữ liệu trả về',
-    type: Object,
-    nullable: true,
-  })
-  Data: T | null;
-
-  constructor(type?: new () => T) {
-    super();
-    if (type === String as any) {
-      this.Data = '' as any;
-    } else if (type) {
-      this.Data = new type();
-    } else {
-      this.Data = null;
-    }
-  }
-}
-
-export class BaseResponseMessageItem<T> {
-  @ApiProperty({
-    type: [Object],
-    description: 'Danh sách items'
-  })
-  Items: T[] = [];
-}
-
-export class BaseResponseMessagePage<T> {
-  @ApiProperty({
-    type: [Object],
-    description: 'Danh sách items'
-  })
-  Items: T[] = [];
-
-  @ApiProperty({
-    type: PaginationDto,
-    description: 'Thông tin phân trang'
-  })
-  Pagination: PaginationDto = new PaginationDto();
-}
-
-export class BaseUpdateCode<T> {
-  @ApiProperty()
-  query: QueryBase | null = null;
-
-  @ApiProperty({ type: [Object] })
-  Results: T[] = [];
-
-  @ApiProperty()
-  err: string | null = null;
-}
-
-export class QueryBase {
-  max_time = 0;
-}
-
-export class BaseUpdateCodeData<T> {
-  @ApiProperty()
-  Code = 0;
-
-  @ApiProperty()
-  Results: T | null = null;
-}
-
-export class BaseResponse {
-  @ApiProperty()
-  Code: ErrorCode = ErrorCode.SUCCESS;
-
-  @ApiProperty()
-  Message: string = toDescriptionString(ErrorCode.SUCCESS);
-}
-
-export class DataResponse<T> extends BaseResponse {
-  @ApiProperty({ type: Object })
-  Data: T;
-
-  constructor(data: T) {
-    super();
-    this.Data = data;
-  }
-}
-
-export function toDescriptionString(code: ErrorCode): string {
-  return ErrorCode[code] ?? code.toString();
-}
