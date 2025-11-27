@@ -1,3 +1,10 @@
+// Ensure Node's crypto is available as globalThis.crypto for packages
+// that expect a global `crypto` (webpack/node bundling can omit it).
+/* eslint-disable @typescript-eslint/no-var-requires */
+if (typeof (globalThis as any).crypto === 'undefined') {
+  (globalThis as any).crypto = require('crypto');
+}
+
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';

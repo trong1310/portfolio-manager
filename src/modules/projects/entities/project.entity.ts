@@ -27,7 +27,8 @@ export class Project extends BaseEntity {
   generateUuid() {
     this.uuid = uuidv4();
   }
-
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  url: string;
   @JoinColumn({ name: 'created_by', referencedColumnName: 'uuid' })
   @OneToMany(() => Account, (accounts) => accounts.uuid, {
     onDelete: 'CASCADE',

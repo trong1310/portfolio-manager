@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json.schemastore.org/schematics",
+  "schematics": {
+    "custom-resource": {
+      "description": "Generate a module/controller/service/dto/entity scaffold",
+      "factory": "./custom-resource/index.js#customController",
+      "schema": "./custom-resource/schema.json"
+    }
+  }
+}

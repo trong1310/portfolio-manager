@@ -13,7 +13,13 @@ export class ProjectController {
   @ApiOperation({ summary: 'Lấy danh sách projects' })
   @ApiBody({ type: BaseRequestModels })
   @ApiResponse({ status: 200, description: 'Lấy thành công', type: ProjectPageResponse })
-  get(@Body() req: BaseRequestModels) {
-    return this.projectService.get(req);
+  Post(@Body() req: BaseRequestModels) {
+    return this.projectService.project(req);
+  }
+  @Get('/:uuid')
+  @ApiOperation({ summary: 'Lấy chi tiết project' })
+  @ApiResponse({ status: 200, description: 'Lấy thành công', type: ProjectPageResponse })
+  Get(@Param('uuid') uuid: string) {
+    return this.projectService.projectByUuid(uuid);
   }
 }

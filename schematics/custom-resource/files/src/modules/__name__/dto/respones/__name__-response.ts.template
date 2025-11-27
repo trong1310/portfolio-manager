@@ -1,0 +1,27 @@
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  BaseResponseMessagePage,
+  PageDataResponseDto,
+  PaginationDto,
+} from 'src/common/base-response-messages/base-response';
+
+export class <%= classify(name) %>Dto {
+  @ApiProperty() id: number;
+  @ApiProperty() name: string;
+  @ApiProperty() description: string;
+  @ApiProperty() createdAt: Date;
+  @ApiProperty() updatedAt: Date;
+}
+
+export class <%= classify(name) %>DataPage extends PageDataResponseDto<<%= classify(name) %>Dto> {
+  @ApiProperty({ type: [<%= classify(name) %>Dto] })
+  declare Items: <%= classify(name) %>Dto[];
+
+  @ApiProperty({ type: PaginationDto })
+  declare Pagination: PaginationDto;
+}
+
+export class <%= classify(name) %>PageResponse extends BaseResponseMessagePage<<%= classify(name) %>Dto> {
+  @ApiProperty({ type: <%= classify(name) %>DataPage })
+  declare Data: <%= classify(name) %>DataPage;
+}

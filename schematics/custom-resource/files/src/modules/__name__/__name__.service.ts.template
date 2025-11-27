@@ -1,0 +1,48 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { <%= classify(name) %> } from './entities/<%= dasherize(name) %>.entity';
+import { BaseRequestModels } from 'src/common/base-request-models/base_request';
+import { <%= classify(name) %>PageResponse } from './dto/respones/<%= dasherize(name) %>-response';
+
+@Injectable()
+export class <%= classify(name) %>Service {
+  private readonly logger = new Logger(<%= classify(name) %>Service.name);
+  constructor(
+    @InjectRepository(<%= classify(name) %>)
+    private readonly repo: Repository<<%= classify(name) %>>,
+  ) {}
+
+  async get(req: BaseRequestModels): Promise<<%= classify(name) %>PageResponse> {
+    try {
+      const page = Number(req.page) || 1;
+      const limit = Number(req.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      const resp = new <%= classify(name) %>PageResponse();
+      const items = await this.repo.find({ skip, take: limit });
+
+      const mapped = items.map((item) => ({
+        // adjust fields based on entity shape
+        id: (item as any).id,
+        name: (item as any).name,
+        description: (item as any).description,
+        createdAt: (item as any).createdAt,
+        updatedAt: (item as any).updatedAt,
+      }));
+
+      resp.Data = {
+        Items: mapped,
+        Pagination: {
+          TotalCount: await this.repo.count(),
+          TotalPage: Math.ceil((await this.repo.count()) / limit),
+        },
+      } as any;
+
+      return resp;
+    } catch (error) {
+      this.logger.error('Failed to get resources', error);
+      throw error;
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ErrorCode } from '../error-code.enum';
+import e from 'express';
 
 /* ----------------------- PAGINATION --------------------------- */
 export class PaginationDto {
@@ -13,10 +14,10 @@ export class PaginationDto {
 /* ----------------------- BASE ERROR --------------------------- */
 export class ErrorResponseDto {
   @ApiProperty({ enum: ErrorCode, example: ErrorCode.SUCCESS })
-  Code: ErrorCode;
+  Code!: ErrorCode;
 
   @ApiProperty({ example: 'SUCCESS' })
-  Message: string;
+  Message!: string;
 }
 
 /* ----------------------- BASE PAGE RESPONSE ------------------- */
@@ -51,4 +52,15 @@ export class BaseResponseMessagePage<T> {
     };
   }
 }
-
+export class BaseListResponseMessage<T> {
+  @ApiProperty({ type: ErrorResponseDto })
+  error: ErrorResponseDto;
+  @ApiProperty({ isArray: true })
+  Data: T[];
+}
+export class BaseResponseMessage<T> {
+  @ApiProperty({ type: ErrorResponseDto })
+  error: ErrorResponseDto;
+  @ApiProperty({ isArray: true })
+  Data!: T[]; // mảng
+}

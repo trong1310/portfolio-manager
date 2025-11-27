@@ -1,0 +1,20 @@
+import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { <%= classify(name) %>Service } from './<%= dasherize(name) %>.service';
+import { Create<%= classify(name) %>Dto } from './dto/create-<%= dasherize(name) %>.dto';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { BaseRequestModels } from 'src/common/base-request-models/base_request';
+import { <%= classify(name) %>PageResponse } from './dto/respones/<%= dasherize(name) %>-response';
+
+@Controller('<%= dasherize(name) %>')
+@ApiTags('<%= dasherize(name) %>')
+export class <%= classify(name) %>Controller {
+  constructor(private readonly <%= camelize(name) %>Service: <%= classify(name) %>Service) {}
+
+  @Post()
+  @ApiOperation({ summary: 'Lấy danh sách <%= dasherize(name) %>' })
+  @ApiBody({ type: BaseRequestModels })
+  @ApiResponse({ status: 200, description: 'Lấy thành công', type: <%= classify(name) %>PageResponse })
+  get(@Body() req: BaseRequestModels) {
+    return this.<%= camelize(name) %>Service.get(req);
+  }
+}

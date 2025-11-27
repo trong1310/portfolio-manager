@@ -3,6 +3,7 @@ import {
   BaseResponseMessagePage,
   PageDataResponseDto,
   PaginationDto,
+  BaseResponseMessage,
 } from 'src/common/base-response-messages/base-response';
 export class ProjectDto {
   @ApiProperty() uuid: string;
@@ -12,6 +13,18 @@ export class ProjectDto {
   @ApiProperty() createdAt: Date;
   @ApiProperty() updatedAt: Date;
   @ApiProperty() imageUrls: string[];
+}
+export class ProjectDetailDto {
+  @ApiProperty({type: String }) uuid;
+  @ApiProperty() name: string;
+  @ApiProperty({type: String , nullable: true}) description;
+  @ApiProperty() createdAt: Date;
+  @ApiProperty({type: [String], nullable: true}) imageUrls;
+  @ApiProperty({type: String , nullable: true}) url;
+}
+export class ProjectDetailResponse extends BaseResponseMessage<ProjectDetailDto> {
+  @ApiProperty({ type: ProjectDetailDto })
+  declare Data: ProjectDetailDto[];
 }
 export class ProjectDataPage extends PageDataResponseDto<ProjectDto> {
   @ApiProperty({ type: [ProjectDto] })
