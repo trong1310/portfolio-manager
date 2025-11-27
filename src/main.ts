@@ -41,7 +41,7 @@ async function bootstrap() {
   });
 
   const configDocs = new DocumentBuilder()
-    .setTitle('Test api tutorial')
+    .setTitle('Portfolio Master API')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

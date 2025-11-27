@@ -1,4 +1,5 @@
-import { ErrorCode } from './../../common/error-code.enum';
+import { ErrorResponseDto } from './../../common/base-response-messages/base-response';
+import { ErrorCode, ErrorMessage } from './../../common/error-code.enum';
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -83,7 +84,10 @@ export class ProjectService {
       });
       if (project == null) {
         // assign enum value but cast to any to satisfy ErrorResponseDto type
-        resp.error = ErrorCode.NOT_FOUND as any;
+       resp.error = {
+          Code: ErrorCode.NOT_FOUND,
+          Message: ErrorMessage[ErrorCode.NOT_FOUND],
+        };
         return resp;
       }
       var images = await this.uploadRepository.find({
