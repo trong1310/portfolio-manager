@@ -52,15 +52,18 @@ export class BaseResponseMessagePage<T> {
     };
   }
 }
+export class BaseResponseMessageBase {
+  @ApiProperty({ type: ErrorResponseDto, nullable: true })
+  error?: ErrorResponseDto;
+}
+
 export class BaseListResponseMessage<T> {
   @ApiProperty({ type: ErrorResponseDto })
   error: ErrorResponseDto;
   @ApiProperty({ isArray: true })
   Data: T[];
 }
-export class BaseResponseMessage<T> {
-  @ApiProperty({ type: ErrorResponseDto })
-  error: ErrorResponseDto;
+export class BaseResponseMessage<T> extends BaseResponseMessageBase {
   @ApiProperty({ isArray: true })
-  Data!: T[]; // mảng
+  Data!: T[];
 }

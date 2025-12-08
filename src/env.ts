@@ -90,6 +90,10 @@ export class CommonAppEnvironment {
   @IsString()
   @IsOptional()
   redisPassword: string;
+
+  @Env()
+  @IsString()
+  accessKey: string;
 }
 
 export const env = getEnvironment<CommonAppEnvironment>(CommonAppEnvironment, {

@@ -13,6 +13,7 @@ export class ProjectDto {
   @ApiProperty() createdAt: Date;
   @ApiProperty() updatedAt: Date;
   @ApiProperty() imageUrls: string[];
+  @ApiProperty() url: string;
 }
 export class ProjectDetailDto {
   @ApiProperty({type: String }) uuid;
