@@ -13,7 +13,6 @@ export class ProjectDto {
   @ApiProperty() createdAt: Date;
   @ApiProperty() updatedAt: Date;
   @ApiProperty() imageUrls: string[];
-  @ApiProperty() url: string;
 }
 export class ProjectDetailDto {
   @ApiProperty({type: String }) uuid;
@@ -21,7 +20,6 @@ export class ProjectDetailDto {
   @ApiProperty({type: String , nullable: true}) description;
   @ApiProperty() createdAt: Date;
   @ApiProperty({type: [String], nullable: true}) imageUrls;
-  @ApiProperty({type: String , nullable: true}) url;
 }
 export class ProjectDetailResponse extends BaseResponseMessage<ProjectDetailDto> {
   @ApiProperty({ type: ProjectDetailDto })

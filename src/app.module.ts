@@ -22,6 +22,8 @@ import { HttpExceptionFilter } from './common/http-exception.filter';
 import { HandlerResultInterceptor } from './common/handler-result.interceptor';
 import { UploadModule } from './modules/upload/upload.module';
 import { ProjectModule } from './modules/projects/project.module';
+import { ProjectDetail } from './modules/project-detail/entities/project-detail.entity';
+import { ProjectDetailModule } from './modules/project-detail/project-detail.module';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -49,6 +51,7 @@ import { ProjectModule } from './modules/projects/project.module';
     RefeshTokenModule,
     UploadModule,
     ProjectModule,
+    ProjectDetailModule
   ],
   controllers: [AppController],
   providers: [

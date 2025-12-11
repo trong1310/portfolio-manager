@@ -10,10 +10,7 @@ export class CreateProjectDto {
   description: string;
   @ApiProperty({title:"Images Url of project", required: false})
   @IsString({ each: true, message: "Images Url phải là chuỗi" })
-  imageUrls: string[];
-  @ApiProperty({ title: "URL dự án", example: "http://example.com", required: false })
-  @IsString({ message: "URL dự án phải là chuỗi" })
-  url: string;
+  imageUrls: string;
   @ApiProperty({title: "Access Key", example: "key", required: true})
   @IsString({ message: "Access Key phải là chuỗi" })
   accessKey: string;

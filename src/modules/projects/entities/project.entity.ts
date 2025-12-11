@@ -10,6 +10,7 @@ import { BaseEntity } from 'src/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Account } from 'src/modules/accounts/entities/account.entity';
 import { AccountRatetingProjectEntity } from './account-rating-project.entity';
+import { ProjectDetail } from 'src/modules/project-detail/entities/project-detail.entity';
 @Entity({ name: 'projects' })
 export class Project extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -27,8 +28,6 @@ export class Project extends BaseEntity {
   generateUuid() {
     this.uuid = uuidv4();
   }
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  url: string;
   @Column({ type: 'varchar', length: 255, nullable: false })
   slug: string;
   @JoinColumn({ name: 'created_by', referencedColumnName: 'uuid' })
@@ -39,4 +38,7 @@ export class Project extends BaseEntity {
   accounts: Account[];
   @OneToMany(() => AccountRatetingProjectEntity, (arp) => arp.project_uuid)
   accountRatetingProjects: AccountRatetingProjectEntity[];
+
+  @OneToMany(() => ProjectDetail, (projectDetail) => projectDetail.project )
+  details: ProjectDetail[];
 }

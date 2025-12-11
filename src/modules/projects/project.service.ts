@@ -13,6 +13,7 @@ import {
 } from './dto/respones/project-response';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { slugify } from 'src/common/utils/util';
+import { ProjectDetail } from '../project-detail/entities/project-detail.entity';
 
 @Injectable()
 export class ProjectService {
@@ -22,8 +23,8 @@ export class ProjectService {
     private readonly projectRepository: Repository<Project>,
     @InjectRepository(Upload)
     private readonly uploadRepository: Repository<Upload>,
-    @InjectRepository(AccountRatetingProjectEntity)
-    private readonly ratingRepository: Repository<AccountRatetingProjectEntity>,
+    @InjectRepository(ProjectDetail)
+    private readonly projectDetailRepository: Repository<ProjectDetail>,
   ) { }
   async project(req: BaseRequestModels): Promise<ProjectPageResponse> {
     try {
@@ -57,7 +58,6 @@ export class ProjectService {
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
           imageUrls,
-          url: project.url,
           slug: project.slug,
         };
       });
@@ -85,7 +85,7 @@ export class ProjectService {
     try {
       const project = await this.projectRepository.findOne({
         where: { slug: slug, is_enable: true },
-        select: ['uuid', 'name', 'description', 'createdAt', 'url'],
+        select: ['uuid', 'name', 'description', 'createdAt'],
       });
       if (project == null) {
         // assign enum value but cast to any to satisfy ErrorResponseDto type
@@ -96,10 +96,13 @@ export class ProjectService {
         return resp;
       }
       var images = await this.uploadRepository.find({
-        where: { ownerUuid:   project.uuid },
+        where: { ownerUuid: project.uuid },
       });
+      var lstDetailUuids = ( await this.projectDetailRepository.find({
+        where: { project_uuid: project.uuid },
+      })).map((detail) => detail.uuid);
       const imageUrls = images
-        .filter((upload) => upload.ownerUuid === project.uuid)
+        .filter((upload) => lstDetailUuids.includes(upload.ownerUuid))
         .map((x) => x.path);
       resp.Data = [
         {
@@ -107,8 +110,7 @@ export class ProjectService {
           name: project.name,
           description: project.description,
           createdAt: project.createdAt,
-          imageUrls: imageUrls ?? [],
-          url: project.url,
+          imageUrls: imageUrls ?? []
         },
       ];
 
@@ -124,27 +126,45 @@ export class ProjectService {
   async createProject(req: CreateProjectDto): Promise<BaseResponseMessageBase> {
     var resp = new BaseResponseMessageBase();
     try {
-        if (req.accessKey !== process.env.ACCESS_KEY) {
-          resp.error = {
-            Code: ErrorCode.UNAUTHORIZED,
-            Message: ErrorMessage[ErrorCode.UNAUTHORIZED],
-          };
-          return resp;
-        }
-        if(await this.projectRepository.findOne({where: {name: req.name}})) {
-            resp.error = {
-            Code: ErrorCode.PROJECT_NAME_EXIST,
-            Message: ErrorMessage[ErrorCode.PROJECT_NAME_EXIST],
-          };
-          return resp;
-        }
+      if (req.accessKey !== process.env.ACCESS_KEY) {
+        resp.error = {
+          Code: ErrorCode.UNAUTHORIZED,
+          Message: ErrorMessage[ErrorCode.UNAUTHORIZED],
+        };
+        return resp;
+      }
+      if (await this.projectRepository.findOne({ where: { name: req.name } })) {
+        resp.error = {
+          Code: ErrorCode.PROJECT_NAME_EXIST,
+          Message: ErrorMessage[ErrorCode.PROJECT_NAME_EXIST],
+        };
+        return resp;
+      }
       const newProject = this.projectRepository.create({
         name: req.name,
         description: req.description,
-        url: req.url,
         slug: slugify(req.name),
       });
       await this.projectRepository.save(newProject);
+      const projectDetailMain = this.projectDetailRepository.create({
+        project_uuid: newProject.uuid,
+        title: newProject.name,
+        description: req.description,
+        isMain: true,
+      });
+      await this.projectDetailRepository.save(projectDetailMain);
+      if (req.imageUrls != null && typeof req.imageUrls === 'string') {
+        const findImages = await this.uploadRepository.findOne({
+          where: {
+            path: req.imageUrls,
+          }
+        });
+        if (findImages != null) {
+          findImages.ownerUuid = projectDetailMain.uuid;
+          await this.uploadRepository.save(findImages);
+        }
+
+      }
       return resp;
     } catch (error) {
       this.logger.error(
