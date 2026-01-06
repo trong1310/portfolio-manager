@@ -1,69 +1,56 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ErrorCode } from '../error-code.enum';
-import e from 'express';
 
 /* ----------------------- PAGINATION --------------------------- */
 export class PaginationDto {
   @ApiProperty({ example: 0 })
-  TotalCount: number;
+  TotalCount: number = 0;
 
   @ApiProperty({ example: 0 })
-  TotalPage: number;
+  TotalPage: number = 0;
 }
 
 /* ----------------------- BASE ERROR --------------------------- */
 export class ErrorResponseDto {
-  @ApiProperty({ enum: ErrorCode, example: ErrorCode.SUCCESS })
-  Code!: ErrorCode;
+  @ApiProperty({ example: ErrorCode.SUCCESS })
+  Code: ErrorCode = ErrorCode.SUCCESS;
 
-  @ApiProperty({ example: 'SUCCESS' })
-  Message!: string;
+  @ApiProperty({ example: 'Success' })
+  Message: string = 'Success';
 }
 
 /* ----------------------- BASE PAGE RESPONSE ------------------- */
 export class PageDataResponseDto<T> {
   @ApiProperty({ isArray: true })
-  Items: T[];
+  Items: T[] = [];
 
   @ApiProperty({ type: PaginationDto })
-  Pagination: PaginationDto;
+  Pagination: PaginationDto = new PaginationDto();
+}
+
+/* ----------------------- BASE RESPONSE PAGE ------------------- */
+export class BaseResponseMessagePage<T> {
+  @ApiProperty({ type: ErrorResponseDto })
+  error: ErrorResponseDto = new ErrorResponseDto();
+
+  @ApiProperty({ type: () => PageDataResponseDto })
+  Data: PageDataResponseDto<T> = new PageDataResponseDto<T>();
+}
+
+/* ----------------------- BASE RESPONSE BASE ------------------- */
+export class BaseResponseMessageBase {
+  @ApiProperty({ type: ErrorResponseDto })
+  error: ErrorResponseDto = new ErrorResponseDto();
+}
+
+/* ----------------------- BASE LIST RESPONSE ------------------- */
+export class BaseListResponseMessage<T> extends BaseResponseMessageBase {
+  @ApiProperty({ isArray: true })
+  Data: T[] = [];
 }
 
 /* ----------------------- BASE RESPONSE ------------------------ */
-export class BaseResponseMessagePage<T> {
-  @ApiProperty({ type: ErrorResponseDto })
-  error: ErrorResponseDto;
-
-  @ApiProperty({ type: () => PageDataResponseDto })
-  Data: PageDataResponseDto<T>;
-
-  constructor() {
-    this.error = {
-      Code: ErrorCode.SUCCESS,
-      Message: 'SUCCESS',
-    };
-
-    this.Data = {
-      Items: [],
-      Pagination: {
-        TotalCount: 0,
-        TotalPage: 0,
-      },
-    };
-  }
-}
-export class BaseResponseMessageBase {
-  @ApiProperty({ type: ErrorResponseDto, nullable: true })
-  error?: ErrorResponseDto;
-}
-
-export class BaseListResponseMessage<T> {
-  @ApiProperty({ type: ErrorResponseDto })
-  error: ErrorResponseDto;
-  @ApiProperty({ isArray: true })
-  Data: T[];
-}
 export class BaseResponseMessage<T> extends BaseResponseMessageBase {
   @ApiProperty({ isArray: true })
-  Data!: T[];
+  Data: T[] = [];
 }

@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { ProjectService } from './project.service';
 import { BaseRequestModels } from 'src/common/base-request-models/base_request';
 import { ProjectPageResponse } from './dto/respones/project-response';
-import { CreateProjectDto } from './dto/create-project.dto';
+import { CreateProjectDto, UpdateDetailProjectDto } from './dto/create-project.dto';
 import { BaseResponseMessageBase } from 'src/common/base-response-messages/base-response';
 
 @Controller('projects')
@@ -30,5 +30,12 @@ export class ProjectController {
   @ApiResponse({ status: 200, description: 'Tạo thành công', type: BaseResponseMessageBase })
   CreateProject(@Body() req: CreateProjectDto) {
     return this.projectService.createProject(req);
+  }
+    @Post('/update-detail')
+  @ApiOperation({ summary: 'Cập nhật thêm thông tin dự án' })
+  @ApiBody({ type: UpdateDetailProjectDto, isArray: true })
+  @ApiResponse({ status: 200, description: 'Tạo thành công', type: BaseResponseMessageBase })
+  UpdateDetailProject(@Body() req: UpdateDetailProjectDto[]) {
+    return this.projectService.updateDetailProject(req);
   }
 }

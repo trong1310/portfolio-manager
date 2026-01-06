@@ -6,29 +6,27 @@ import { v4 as uuidv4 } from 'uuid';
 export class ProjectDetail extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column({ nullable: false, unique: true ,length:36})
+  @Column({ nullable: false, unique: true, length: 36 })
   uuid: string;
   @Column({ nullable: false })
   title: string;
   @Column({ nullable: false })
   description: string;
-  @Column({nullable: false })
-  isMain: boolean;
-  @Column({ nullable: false ,default: true})
-  is_enable: boolean;
   @Column({ nullable: false })
-  project_uuid: string;
+  isMain: boolean;
+  @Column({ nullable: false, default: true })
+  is_enable: boolean;
   @ManyToOne(() => Project, project => project.details, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'project_uuid' })
+  @JoinColumn({ name: 'project_uuid',referencedColumnName: 'uuid' })
   project: Project;
   @BeforeInsert()
   generateUuid() {
     this.uuid = uuidv4();
   }
-  
+
 }
 
 

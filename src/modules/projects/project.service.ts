@@ -11,7 +11,7 @@ import {
   ProjectPageResponse,
   ProjectDetailResponse,
 } from './dto/respones/project-response';
-import { CreateProjectDto } from './dto/create-project.dto';
+import { CreateProjectDto, UpdateDetailProjectDto } from './dto/create-project.dto';
 import { slugify } from 'src/common/utils/util';
 import { ProjectDetail } from '../project-detail/entities/project-detail.entity';
 
@@ -41,14 +41,14 @@ export class ProjectService {
         .skip(skip)
         .take(limit)
         .getMany();
-      var lstProjectUuids = projects.map((project) => project.uuid);
-      var uploads = await this.uploadRepository.find({
-        where: { ownerUuid: In(lstProjectUuids) },
+
+      const detailMain = await this.projectDetailRepository.findOne({
+        where: { isMain: true, project: In(projects) },
+      });
+      var imageUrl = await this.uploadRepository.findOne({
+        where: { ownerUuid: detailMain?.uuid },
       });
       const result = projects.map((project) => {
-        const imageUrls = uploads
-          .filter((upload) => upload.ownerUuid === project.uuid)
-          .map((x) => x.path);
 
         return {
           uuid: project.uuid,
@@ -57,7 +57,7 @@ export class ProjectService {
           is_enable: project.is_enable,
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
-          imageUrls,
+          imageUrls: imageUrl?.path ?? '',
           slug: project.slug,
         };
       });
@@ -98,8 +98,8 @@ export class ProjectService {
       var images = await this.uploadRepository.find({
         where: { ownerUuid: project.uuid },
       });
-      var lstDetailUuids = ( await this.projectDetailRepository.find({
-        where: { project_uuid: project.uuid },
+      var lstDetailUuids = (await this.projectDetailRepository.find({
+        where: { project: project },
       })).map((detail) => detail.uuid);
       const imageUrls = images
         .filter((upload) => lstDetailUuids.includes(upload.ownerUuid))
@@ -147,7 +147,7 @@ export class ProjectService {
       });
       await this.projectRepository.save(newProject);
       const projectDetailMain = this.projectDetailRepository.create({
-        project_uuid: newProject.uuid,
+        project: newProject,
         title: newProject.name,
         description: req.description,
         isMain: true,
@@ -173,5 +173,48 @@ export class ProjectService {
       );
       throw new NotFoundException('\nFailed to create project');
     }
+  }
+  async updateDetailProject(req: UpdateDetailProjectDto): Promise<BaseResponseMessageBase> {
+    const resp = new BaseResponseMessageBase();
+
+    try {
+      const projectDetail = await this.projectDetailRepository.findOne({
+        where: { project: { uuid: req.uuid } },
+      });
+      if (projectDetail == null) {
+        resp.error = {
+          Code: ErrorCode.NOT_FOUND,
+          Message: ErrorMessage[ErrorCode.NOT_FOUND],
+        };
+        return resp;
+      }
+      for (const detail of req.details) {
+        const detailEntity = this.projectDetailRepository.create({
+          project: projectDetail.project,
+          title: detail.title,
+          isMain: false,
+          description: detail.description  ,
+        });
+        const savedDetail = await this.projectDetailRepository.save(detailEntity);
+        if (detail.imageUrls != null && typeof detail.imageUrls === 'string') {
+          const findImages = await this.uploadRepository.findOne({
+            where: {
+              path: detail.imageUrls,
+            }
+          });
+          if (findImages != null) {
+            findImages.ownerUuid = savedDetail.uuid;
+            await this.uploadRepository.save(findImages);
+          }
+        }
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to update detail project for message ${error.message} StrackTrace ${error.stack}`,
+        error,
+      );
+      throw new NotFoundException('\nFailed to update detail project');
+    }
+    return resp;
   }
 }

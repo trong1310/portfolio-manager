@@ -15,7 +15,7 @@ export class UploadService {
 
   const newFile = this.uploadRepository.create({
     ownerUuid,
-    path: `/uploads/${file.filename}`,
+    path: `${file.filename}`,
   });
 
   await this.uploadRepository.save(newFile);
@@ -25,7 +25,7 @@ export class UploadService {
     filename: file.filename,
     size: file.size,
     mimetype: file.mimetype,
-    url: `/uploads/${file.filename}`,
+    url: `${file.filename}`,
   };
 }
 
@@ -33,7 +33,7 @@ export class UploadService {
   handleMultiFiles(files: MulterFile[] , ownerUuid?: string) {
     const multiFiles = this.uploadRepository.create(files.map((file) => ({
       ownerUuid: ownerUuid,
-      path: `/uploads/${file.filename}`,
+      path: `${file.filename}`,
     })));
     this.uploadRepository.save(multiFiles);
     return files.map((file) => ({
@@ -41,7 +41,7 @@ export class UploadService {
       filename: file.filename,
       size: file.size,
       mimetype: file.mimetype,
-      url: `/uploads/${file.filename}`,
+      url: `${file.filename}`,
     }));
   }
 }

@@ -11,32 +11,34 @@ export class ProjectDetailService {
   constructor(
     @InjectRepository(ProjectDetail)
     private readonly repo: Repository<ProjectDetail>,
-  ) {}
+  ) { }
 
-  async get(req: BaseRequestModels): Promise<ProjectDetailPageResponse> {
+  async get(uuid: string): Promise<ProjectDetailPageResponse> {
     try {
-      const page = Number(req.page) || 1;
-      const limit = Number(req.limit) || 10;
-      const skip = (page - 1) * limit;
-
       const resp = new ProjectDetailPageResponse();
-      const items = await this.repo.find({ skip, take: limit });
-
-      const mapped = items.map((item) => ({
-        // adjust fields based on entity shape
-        id: (item as any).id,
-        name: (item as any).name,
-        description: (item as any).description,
-        createdAt: (item as any).createdAt,
-        updatedAt: (item as any).updatedAt,
-      }));
+      const items = await this.repo.find({ where: { project: { uuid } } });
+      const details = items
+        .filter(item => item.isMain === false)
+        .map(detail => ({
+          id: detail.id,
+          name: detail.title,
+          description: detail.description,
+          isMain: detail.isMain,
+          imageUrl: '',
+        }));
+      const mapped = items
+        .filter(item => item.isMain === true)
+        .map(item => ({
+          id: item.id,
+          name: item.title,
+          description: item.description,
+          isMain: item.isMain,
+          listDetail: details,
+        }));
 
       resp.Data = {
         Items: mapped,
-        Pagination: {
-          TotalCount: await this.repo.count(),
-          TotalPage: Math.ceil((await this.repo.count()) / limit),
-        },
+
       } as any;
 
       return resp;

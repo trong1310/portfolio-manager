@@ -12,7 +12,7 @@ export class ProjectDto {
   @ApiProperty() is_enable: boolean;
   @ApiProperty() createdAt: Date;
   @ApiProperty() updatedAt: Date;
-  @ApiProperty() imageUrls: string[];
+  @ApiProperty() imageUrls: string;
 }
 export class ProjectDetailDto {
   @ApiProperty({type: String }) uuid;

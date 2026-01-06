@@ -5,12 +5,26 @@ import {
   PaginationDto,
 } from 'src/common/base-response-messages/base-response';
 
-export class ProjectDetailDto {
-  @ApiProperty() id: number;
-  @ApiProperty() name: string;
-  @ApiProperty() description: string;
-  @ApiProperty() isMain: boolean;
-  @ApiProperty() imageUrl: string
+
+export class ProjectDetailBaseDto {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  isMain: boolean;
+
+  @ApiProperty()
+  imageUrl: string;
+}
+export class ProjectDetailDto extends ProjectDetailBaseDto {
+  @ApiProperty({ type: () => ProjectDetailBaseDto, isArray: true })
+  listDetail: ProjectDetailBaseDto[];
 }
 
 export class ProjectDetailDataPage extends PageDataResponseDto<ProjectDetailDto> {

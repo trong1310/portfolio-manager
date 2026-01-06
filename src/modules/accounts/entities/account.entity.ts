@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { BaseEntity } from 'src/common';
 import { v4 as uuidv4 } from 'uuid';
 import { AccountRatetingProjectEntity } from 'src/modules/projects/entities/account-rating-project.entity';
+import { Project } from 'src/modules/projects/entities/project.entity';
 @Entity({ name: 'accounts' })
 export class Account extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -35,4 +36,6 @@ export class Account extends BaseEntity {
   }
     @OneToMany(() => AccountRatetingProjectEntity, (arp) => arp.account_uuid)
     accountRatetingProjects: AccountRatetingProjectEntity[];
+    @OneToMany(() => Project, (project) => project.accounts)
+    projects: Project[];
 }
