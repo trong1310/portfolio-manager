@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { Upload } from '../upload/entities/upload.entity';
-import { AccountRatetingProjectEntity } from './entities/account-rating-project.entity';
 import { BaseRequestModels } from 'src/common/base-request-models/base_request';
 import {
   ProjectPageResponse,
@@ -218,3 +217,4 @@ export class ProjectService {
     return resp;
   }
 }
+               

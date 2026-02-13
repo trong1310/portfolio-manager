@@ -35,7 +35,7 @@ export class ProjectController {
   @ApiOperation({ summary: 'Cập nhật thêm thông tin dự án' })
   @ApiBody({ type: UpdateDetailProjectDto, isArray: true })
   @ApiResponse({ status: 200, description: 'Tạo thành công', type: BaseResponseMessageBase })
-  UpdateDetailProject(@Body() req: UpdateDetailProjectDto[]) {
+  UpdateDetailProject(@Body() req: UpdateDetailProjectDto) {
     return this.projectService.updateDetailProject(req);
   }
 }
