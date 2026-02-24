@@ -11,7 +11,6 @@ import {
 import { BaseEntity } from 'src/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Account } from 'src/modules/accounts/entities/account.entity';
-import { AccountRatetingProjectEntity } from './account-rating-project.entity';
 import { ProjectDetail } from 'src/modules/project-detail/entities/project-detail.entity';
 
 @Index('uq_project_slug', ['slug'], { unique: true })
@@ -48,9 +47,7 @@ export class Project extends BaseEntity {
   })
   accounts: Account[];
 
-  @OneToMany(() => AccountRatetingProjectEntity, (arp) => arp.project_uuid)
-  accountRatetingProjects: AccountRatetingProjectEntity[];
-
+  
   @OneToMany(() => ProjectDetail, (projectDetail) => projectDetail.project)
   details: ProjectDetail[];
 }
